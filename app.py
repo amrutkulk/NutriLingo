@@ -13,11 +13,34 @@ if uploaded_file:
     st.image(image, caption="Uploaded Menu", use_column_width=True)
 
     with st.spinner("Extracting text using EasyOCR..."):
-        extracted_text = extract_text_from_image(image)
+        # Now returns a list of lines (menu items)
+        menu_items = extract_text_from_image(image)
 
-    st.text_area("Extracted Text", value=extracted_text, height=200)
+    # Display items as a numbered list
+    st.subheader("Extracted Menu Items:")
+    for i, item in enumerate(menu_items, start=1):
+        st.markdown(f"**{i}.** {item}")
 
-    if extracted_text:
-        with st.spinner("Translating text..."):
-            translated_text = translate_text(extracted_text)
-        st.text_area("Translated Text", value=translated_text, height=200)
+    if menu_items:
+        # Language selector
+        target_language = st.selectbox(
+            "Select target language",
+            ["en", "fr", "es", "de", "hi", "zh", "ja", "it"],
+            index=0
+        )
+
+        # Join menu items into one block of text for translation
+        joined_text = "\n".join(menu_items)
+
+        with st.spinner(f"Translating to {target_language.upper()}..."):
+            translated_items = translate_text(joined_text, target_language)
+
+        st.subheader("📝 Side-by-Side Translated Menu:")
+
+        # Ensure list lengths match before pairing
+        if len(menu_items) == len(translated_items):
+            for original, translated in zip(menu_items, translated_items):
+                st.markdown(f"**{original}**  →  *{translated}*")
+        else:
+            st.warning("Mismatch in translation count. Showing raw translated block instead.")
+            st.text_area("Translated Text", value="\n".join(translated_items), height=200)
