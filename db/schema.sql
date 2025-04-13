@@ -1,3 +1,10 @@
+-- Drop old tables in reverse dependency order
+DROP TABLE IF EXISTS food_log;
+DROP TABLE IF EXISTS nutrition;
+DROP TABLE IF EXISTS menu_items;
+DROP TABLE IF EXISTS menus;
+DROP TABLE IF EXISTS users;
+
 -- Users Table
 CREATE TABLE users (
     user_id SERIAL PRIMARY KEY,
@@ -21,9 +28,9 @@ CREATE TABLE menu_items (
     item_text_translated TEXT
 );
 
--- Nutrition Table
+-- ✅ Nutrition Table with PRIMARY KEY for item_id
 CREATE TABLE nutrition (
-    item_id INTEGER REFERENCES menu_items(item_id),
+    item_id INTEGER PRIMARY KEY REFERENCES menu_items(item_id),
     calories FLOAT,
     protein FLOAT,
     carbs FLOAT,
